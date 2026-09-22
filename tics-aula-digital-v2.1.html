@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12221D">
+<title>TICs Aula Digital</title>
+<style>
+:root{
+  --paper:#F4F6F1; --ink:#12221D; --ink2:#3C4C46; --green:#0B6B3A; --green-dk:#084D2A;
+  --green-soft:#DCEBE1; --gold:#F2C200; --red:#C8332F; --red-soft:#F7DEDC; --line:#C4CFC7;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:17px/1.45 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:16px 16px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+.marca{font:700 15px "Trebuchet MS","Segoe UI",sans-serif;color:var(--ink2)}
+
+.topo{display:flex;align-items:center;gap:10px}
+.topo h1{font:700 20px "Trebuchet MS","Segoe UI",sans-serif}
+.voltar{width:40px;height:40px;border-radius:12px;border:2px solid var(--ink);background:#fff;font-size:22px;line-height:1;flex:none}
+
+.aluno{background:var(--ink);color:#fff;border-radius:18px;padding:22px 16px 16px;position:relative;overflow:hidden}
+.aluno::before,.placar::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:linear-gradient(90deg,var(--green) 0 34%,var(--gold) 34% 67%,var(--red) 67% 100%)}
+.aluno .ola{font-size:15px;color:#B9C7C0}
+.aluno .nivel{font:700 28px/1.15 "Trebuchet MS","Segoe UI",sans-serif;margin:2px 0 12px}
+.aluno .nivel small{font:600 14px "Segoe UI",sans-serif;color:var(--gold);margin-left:6px}
+.xpbar{height:12px;background:#2C3E37;border-radius:99px;overflow:hidden}
+.xpbar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .5s}
+.aluno .xptxt{font-size:14px;color:#B9C7C0;margin-top:8px}
+
+.classes{display:flex;gap:8px}
+.classes button{flex:1;padding:8px 6px;border-radius:99px;border:2px solid var(--ink);background:#fff;font-size:14px;font-weight:600}
+.classes button[aria-current="true"]{background:var(--ink);color:#fff}
+.classes button:disabled{border-color:var(--line);color:#6F7F78;background:transparent;cursor:default}
+
+.destaque{background:var(--green-soft);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.destaque b{font-size:18px}
+
+.btn{display:block;width:100%;text-align:center;text-decoration:none;background:var(--green);color:#fff;border:0;border-bottom:4px solid var(--green-dk);border-radius:12px;padding:13px 16px;font-weight:700}
+.btn.sec{background:#fff;color:var(--ink);border:2px solid var(--ink);border-bottom-width:4px}
+.btn.perigo{background:#fff;color:var(--red);border:2px solid var(--red);border-bottom-width:4px}
+.btn:disabled{opacity:.45;cursor:default}
+.acao{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid var(--ink);border-bottom-width:4px;border-radius:14px;padding:12px 14px}
+.acao .ic{font-size:28px;width:40px;text-align:center}
+.acao b{display:block}
+.acao small{color:var(--ink2);font-size:14px;line-height:1.3;display:block}
+.lista{display:flex;flex-direction:column;gap:10px}
+
+.esc{display:flex;flex-direction:column;gap:8px}
+.esc button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.esc button[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
+.esc .ic{font-size:24px}
+.esc small{display:block;color:var(--ink2);font-size:14px}
+.chips{display:flex;gap:8px}
+.chips button{flex:1;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:#fff;font-weight:600}
+.chips.pq button{font-size:14px}
+.chips button[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
+.chips button:disabled{opacity:.45;cursor:default}
+.sub{font:700 16px "Trebuchet MS","Segoe UI",sans-serif}
+
+.prog{display:flex;justify-content:space-between;font-size:15px;color:var(--ink2)}
+.barra{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--green);border-radius:99px}
+.tempo{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.tempo i{display:block;height:100%;width:100%;background:var(--gold)}
+.tempo i.baixo{background:var(--red)}
+.pergunta{font:700 21px/1.3 "Trebuchet MS","Segoe UI",sans-serif;margin:6px 0 2px}
+#ops{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid var(--ink);border-bottom-width:4px;border-radius:12px;padding:12px 14px}
+.opt:active:not(:disabled){transform:translateY(2px);border-bottom-width:2px}
+.opt:disabled{color:var(--ink);cursor:default}
+.opt.ok{background:var(--green-soft);border-color:var(--green)}
+.opt.no{background:var(--red-soft);border-color:var(--red)}
+.opt.dim{opacity:.55}
+.opt .marca-r{font-weight:700}
+.fb{border-radius:12px;padding:12px 14px;border:2px solid}
+.fb.ok{background:var(--green-soft);border-color:var(--green)}
+.fb.no{background:var(--red-soft);border-color:var(--red)}
+.fb strong{display:block;margin-bottom:2px}
+
+/* actividades de escrita */
+.contexto{background:#fff;border:2px solid var(--line);border-left:6px solid var(--gold);border-radius:12px;padding:12px 14px}
+.contexto small{display:block;color:var(--ink2);font-size:14px;font-weight:600;margin-bottom:2px}
+#resp-escrita{font:17px/1.4 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;min-height:150px}
+.rot{font-size:14px;font-weight:700;color:var(--ink2);margin-bottom:4px}
+.minha,.ref{border-radius:12px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.minha{background:#fff;border:2px solid var(--line)}
+.ref{background:var(--green-soft);border:2px solid var(--green)}
+.ponto{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.ponto input{width:22px;height:22px;margin-top:2px;flex:none;accent-color:var(--green)}
+.banner{border-radius:12px;padding:12px 14px;font-weight:700}
+.banner.completa{background:var(--green-soft);border:2px solid var(--green)}
+.banner.parcial{background:#FBF1C7;border:2px solid var(--gold)}
+.banner.estudar{background:var(--red-soft);border:2px solid var(--red)}
+
+.placar{background:var(--ink);color:#fff;border-radius:18px;padding:22px 16px;text-align:center;position:relative;overflow:hidden}
+.placar .nota{font:800 46px/1 "Trebuchet MS","Segoe UI",sans-serif}
+.placar .pct{color:var(--gold);font-weight:700;margin-top:4px}
+.placar p{margin-top:8px;color:#D6E0DA}
+.novo{background:var(--gold);color:var(--ink);border-radius:12px;padding:12px 14px;font-weight:700}
+.erro{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px}
+.erro p+p{margin-top:6px}
+.erro .certa{color:var(--green-dk);font-weight:600}
+.erro .exp{color:var(--ink2);font-size:15px}
+
+.medalhas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.med{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:12px;text-align:center}
+.med .ic{font-size:34px}
+.med b{display:block;font-size:15px;margin-top:2px}
+.med small{display:block;color:var(--ink2);font-size:13px;line-height:1.3;margin-top:2px}
+.med.trancada{border-color:var(--line);background:transparent}
+.med.trancada .ic{filter:grayscale(1);opacity:.45}
+.med.trancada b{color:#5E6E67}
+
+.caixa{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:12px 8px;text-align:center}
+.nums b{display:block;font:800 24px "Trebuchet MS","Segoe UI",sans-serif}
+.nums small{color:var(--ink2);font-size:13px}
+textarea,input[type=text]{width:100%;border:2px solid var(--ink);border-radius:12px;padding:10px 12px;background:#fff}
+textarea{min-height:88px;font:13px/1.35 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.aviso{font-size:14px;color:var(--ink2)}
+.estado{font-size:14px;font-weight:600;min-height:1.3em}
+.rodape{margin-top:auto;padding-top:10px;font-size:13px;color:var(--ink2);text-align:center;line-height:1.5}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!--
+  BANCO DE ACTIVIDADES
+  Cada actividade em "actividades" tem estes campos:
+    id          -> identificador único
+    tipo        -> "multipla" (omitido = multipla) ou "escrita"
+    tema        -> "seguranca", "hardware" (ou um id novo declarado em "temas")
+    classe      -> 7, 8 ou 9
+    dificuldade -> 1, 2 ou 3 (ainda sem efeito no ecrã; preparado para o futuro)
+    contexto    -> (opcional) situação apresentada antes da pergunta
+    q           -> a pergunta
+  Se tipo = "multipla":
+    opcoes      -> lista de respostas (o programa baralha a ordem)
+    certa       -> posição da resposta certa em "opcoes" (0 = primeira, 1 = segunda...)
+    ordemFixa   -> (opcional) true para não baralhar (ex.: Verdadeiro/Falso)
+    exp         -> explicação mostrada depois de responder
+  Se tipo = "escrita":
+    modelo      -> resposta de referência
+    pontosChave -> lista dos pontos que uma boa resposta inclui (o aluno marca os que incluiu)
+    exp         -> (opcional) nota adicional
+  As lições ("licoes") terminam com uma "verificacao" que pode ser multipla ou escrita.
+-->
+<script type="application/json" id="banco">
+{
+  "temas": [
+    {"id":"seguranca","nome":"Segurança Digital","icone":"🔐"},
+    {"id":"hardware","nome":"Hardware","icone":"💾"}
+  ],
+  "licoes": [
+    {"id":"l1","tema":"seguranca","classe":7,"titulo":"Palavras-passe seguras",
+     "corpo":["A palavra-passe é a chave das tuas contas. Se alguém a descobrir, pode entrar no teu correio e nas tuas redes sociais e ler as tuas mensagens.","Uma palavra-passe forte tem pelo menos 8 caracteres (melhor 12) e mistura letras maiúsculas e minúsculas, números e símbolos.","Evita o teu nome, a data de nascimento, «123456» e «password». E não uses a mesma palavra-passe em todas as contas."],
+     "exemplo":"Fraca: Joao2009. Forte: T!c_7M#q92. Dica: pensa numa frase e usa as iniciais das palavras, misturando números e símbolos.",
+     "verificacao":{"tipo":"escrita","q":"Agora explica com as tuas palavras: o que torna uma palavra-passe forte?","modelo":"Uma palavra-passe forte é longa (pelo menos 8 caracteres), mistura letras maiúsculas e minúsculas, números e símbolos, e não usa dados pessoais como o nome ou a data de nascimento. Também não deve ser repetida em várias contas.","pontosChave":["É longa (8 ou mais caracteres)","Mistura letras, números e símbolos","Não usa dados pessoais nem é repetida noutras contas"]}},
+    {"id":"l2","tema":"seguranca","classe":7,"titulo":"Phishing e burlas",
+     "corpo":["Phishing é quando alguém se faz passar por uma entidade de confiança (banco, operadora, escola, amigo) para te roubar dados.","Sinais de alerta: promete prémios, cria urgência («responde já!»), pede senhas ou códigos, tem erros de escrita ou um link estranho.","Não cliques em links suspeitos e nunca envies códigos recebidos por SMS. Em caso de dúvida, contacta a entidade pelos canais oficiais."],
+     "exemplo":"«Parabéns! Ganhou 50 000 MT. Envie o seu PIN para receber.» É uma burla: nenhuma entidade séria pede o teu PIN.",
+     "verificacao":{"q":"Qual destes é um sinal de burla?","opcoes":["Uma mensagem que promete um prémio e pede o teu PIN","Uma mensagem do professor a marcar a aula","Um aviso do teu antivírus","Uma notícia num site conhecido"],"certa":0,"exp":"Prémios inesperados e pedidos de PIN ou senha são sinais clássicos de burla."}},
+    {"id":"l3","tema":"seguranca","classe":7,"titulo":"Vírus e antivírus",
+     "corpo":["Um vírus é um programa malicioso que pode apagar ficheiros, abrandar o dispositivo ou roubar informação.","Apanham-se por pen drives desconhecidas, programas de fontes duvidosas e links suspeitos.","O antivírus detecta e remove ameaças. Para te proteger: mantém o antivírus e o sistema actualizados, analisa as pen drives antes de abrir e faz cópias de segurança."],
+     "exemplo":"Uma pen drive emprestada pode ter vírus. Analisa-a com o antivírus antes de abrir os ficheiros.",
+     "verificacao":{"q":"O que deves fazer com uma pen drive emprestada?","opcoes":["Abrir tudo logo","Analisá-la com o antivírus antes de abrir os ficheiros","Formatar o computador","Nada, as pen drives nunca têm vírus"],"certa":1,"exp":"As pen drives partilhadas são uma das formas mais comuns de espalhar vírus."}},
+    {"id":"l4","tema":"hardware","classe":7,"titulo":"Dispositivos de entrada e de saída",
+     "corpo":["Os dispositivos de entrada enviam informação ao computador: teclado, rato, microfone, scanner.","Os dispositivos de saída mostram ou entregam o resultado: monitor, impressora, colunas.","Alguns fazem as duas coisas, como o ecrã táctil, que mostra imagens e recebe os teus toques."],
+     "exemplo":"Ao escrever uma carta: o teclado (entrada) envia as letras, o monitor (saída) mostra-as e a impressora (saída) passa-as para o papel.",
+     "verificacao":{"q":"O microfone é um dispositivo de…","opcoes":["saída","entrada","armazenamento","impressão"],"certa":1,"exp":"O microfone capta o som e envia-o ao computador: é de entrada."}}
+  ],
+  "actividades": [
+    {"id":"s1","tema":"seguranca","classe":7,"dificuldade":1,"q":"Qual destas palavras-passe é a mais segura?","opcoes":["12345678","password","Joao2009","T!c_7M#q92"],"certa":3,"exp":"Mistura letras maiúsculas e minúsculas, números e símbolos, e não usa o teu nome nem uma sequência fácil de adivinhar."},
+    {"id":"s2","tema":"seguranca","classe":7,"dificuldade":1,"q":"Recebes uma mensagem: «Ganhaste um telemóvel! Clica no link e envia os teus dados.» O que fazes?","opcoes":["Clico no link e preencho depressa","Não clico, apago a mensagem e aviso um adulto ou o professor","Partilho com os amigos para também ganharem","Respondo a pedir mais informações"],"certa":1,"exp":"É uma tentativa de burla. Prémios que ninguém te prometeu e pedidos de dados pessoais são sinais de alerta."},
+    {"id":"s3","tema":"seguranca","classe":7,"dificuldade":1,"q":"O que é um vírus informático?","opcoes":["Um programa malicioso que pode danificar ficheiros ou roubar informação","Uma peça do computador","Um tipo de teclado","Um programa para desenhar"],"certa":0,"exp":"Os vírus são software malicioso. Podem apagar ficheiros, abrandar o dispositivo ou espalhar-se para outros."},
+    {"id":"s4","tema":"seguranca","classe":7,"dificuldade":1,"q":"Para que serve um antivírus?","opcoes":["Para aumentar a memória RAM","Para detectar e remover software malicioso","Para ligar à Internet","Para escrever documentos"],"certa":1,"exp":"O antivírus analisa o dispositivo e ajuda a detectar e eliminar ameaças. Precisa de ser mantido actualizado."},
+    {"id":"s5","tema":"seguranca","classe":7,"dificuldade":1,"q":"Com quem deves partilhar a tua palavra-passe?","opcoes":["Com o melhor amigo","Com toda a turma","Com ninguém","Com quem a pedir por mensagem"],"certa":2,"exp":"A palavra-passe é pessoal. Nenhuma empresa séria pede a tua palavra-passe por mensagem."},
+    {"id":"s6","tema":"seguranca","classe":7,"dificuldade":2,"q":"O que é o phishing?","opcoes":["Um jogo online","Uma tentativa de enganar alguém para roubar dados, fingindo ser uma entidade de confiança","Um tipo de antivírus","Uma rede social"],"certa":1,"exp":"O burlão finge ser um banco, uma operadora ou uma pessoa conhecida para obter dados como senhas e números de conta."},
+    {"id":"s8","tema":"seguranca","classe":7,"dificuldade":1,"q":"Antes de descarregar um programa, o que deves verificar?","opcoes":["Se é grátis","Se vem de uma fonte oficial e de confiança","Se tem muitas cores","Se o nome do ficheiro é comprido"],"certa":1,"exp":"Programas de fontes desconhecidas podem trazer vírus. Prefere sempre o site oficial ou a loja de aplicações oficial."},
+    {"id":"s9","tema":"seguranca","classe":7,"dificuldade":1,"q":"Qual destas informações NÃO deves publicar abertamente nas redes sociais?","opcoes":["A tua cor favorita","A tua morada e os horários em que estás sozinho","O nome de um filme de que gostas","Uma foto de uma paisagem"],"certa":1,"exp":"Morada, telefone e rotinas podem ser usados por pessoas mal-intencionadas."},
+    {"id":"s10","tema":"seguranca","classe":7,"dificuldade":1,"q":"Porque é importante fazer cópias de segurança (backup)?","opcoes":["Para o computador ficar mais rápido","Para poder recuperar os ficheiros se se perderem ou avariarem","Para ocupar mais espaço","Para mudar a palavra-passe"],"certa":1,"exp":"Se o dispositivo avariar, for roubado ou apanhar um vírus, a cópia permite recuperar o teu trabalho."},
+    {"id":"s12","tema":"seguranca","classe":7,"dificuldade":2,"q":"O que é a autenticação em dois passos?","opcoes":["Escrever a palavra-passe duas vezes","Além da palavra-passe, confirmar a entrada com um segundo elemento, como um código enviado ao telemóvel","Ter duas contas iguais","Usar dois computadores"],"certa":1,"exp":"Mesmo que alguém descubra a tua palavra-passe, precisa do segundo passo para entrar na conta."},
+
+    {"id":"sa1","tema":"seguranca","classe":7,"dificuldade":1,"contexto":"Um colega pede-te a palavra-passe do teu correio «só para ver uma coisa rápida».","q":"O que é mais correcto fazer?","opcoes":["Dar, porque é teu amigo","Recusar e, se for preciso, mostrares tu mesmo o que ele precisa de ver","Dar apenas metade da palavra-passe","Enviar por mensagem para ficar registado"],"certa":1,"exp":"A palavra-passe é pessoal. Podes ajudar o colega sem a partilhar."},
+    {"id":"sa2","tema":"seguranca","classe":7,"dificuldade":2,"contexto":"O teu telemóvel pede para instalar uma «aplicação grátis de créditos ilimitados» que veio num link recebido no WhatsApp.","q":"O que deves fazer?","opcoes":["Instalar, porque é grátis","Não instalar: fontes desconhecidas e promessas exageradas são sinal de perigo","Instalar e apagar depois se não funcionar","Partilhar o link com a família"],"certa":1,"exp":"Promessas exageradas e links desconhecidos são típicos de burlas e de software malicioso. Instala apenas da loja oficial."},
+    {"id":"sa3","tema":"seguranca","classe":7,"dificuldade":2,"contexto":"Perdeste o telemóvel onde tinhas os trabalhos da escola, e não tens cópia deles.","q":"Que hábito teria evitado a perda dos trabalhos?","opcoes":["Ter um antivírus","Fazer cópias de segurança (backup)","Usar uma palavra-passe forte","Terminar a sessão"],"certa":1,"exp":"A cópia de segurança permite recuperar os ficheiros quando o dispositivo se perde ou avaria."},
+    {"id":"sv1","tema":"seguranca","classe":7,"dificuldade":1,"q":"Verdadeiro ou falso: um site com cadeado (https) é sempre de confiança.","opcoes":["Verdadeiro","Falso"],"certa":1,"ordemFixa":true,"exp":"O cadeado protege a ligação, mas não garante que o site seja honesto."},
+    {"id":"sv2","tema":"seguranca","classe":7,"dificuldade":1,"q":"Verdadeiro ou falso: o antivírus só precisa de ser instalado uma vez e nunca mais precisa de actualizações.","opcoes":["Verdadeiro","Falso"],"certa":1,"ordemFixa":true,"exp":"Surgem novas ameaças todos os dias, por isso o antivírus precisa de se actualizar."},
+    {"id":"sv3","tema":"seguranca","classe":7,"dificuldade":2,"q":"Verdadeiro ou falso: podes usar a mesma palavra-passe em todas as contas, desde que seja forte.","opcoes":["Verdadeiro","Falso"],"certa":1,"ordemFixa":true,"exp":"Se uma conta for descoberta, todas as outras ficam em risco."},
+
+    {"id":"se1","tipo":"escrita","tema":"seguranca","classe":7,"dificuldade":1,"q":"Explica, por palavras tuas, por que razão não deves partilhar a tua palavra-passe.","modelo":"A palavra-passe é pessoal e prova que a conta é minha. Quem a souber pode entrar na minha conta, ler as minhas mensagens, publicar em meu nome e roubar os meus dados. Mesmo um amigo pode partilhá-la sem querer ou usá-la mal.","pontosChave":["É pessoal: prova que a conta é tua","Quem a souber pode entrar na conta e ver os teus dados","Pode usar a conta em teu nome"]},
+    {"id":"se2","tipo":"escrita","tema":"seguranca","classe":7,"dificuldade":2,"contexto":"Recebeste uma mensagem de um número que não conheces: «Sou do banco. Envia o teu PIN para desbloquear a conta.»","q":"O que farias? Explica porquê.","modelo":"Não responderia nem enviaria o PIN. Nenhum banco pede o PIN por mensagem, por isso isto é uma burla (phishing). Apagaria a mensagem, bloquearia o número e, se tivesse dúvidas, contactaria o banco pelos canais oficiais.","pontosChave":["Não enviar o PIN nem responder","Reconhecer que é burla/phishing (o banco não pede o PIN)","Contactar o banco pelos canais oficiais ou avisar um adulto"]},
+    {"id":"se3","tipo":"escrita","tema":"seguranca","classe":7,"dificuldade":1,"q":"Indica duas medidas que podes tomar para proteger o teu telemóvel ou computador contra vírus.","modelo":"Instalar e manter actualizado um antivírus; analisar as pen drives antes de abrir os ficheiros; descarregar programas apenas de fontes oficiais; não clicar em links suspeitos.","pontosChave":["Uma medida correcta (ex.: antivírus actualizado)","Uma segunda medida correcta (ex.: analisar pen drives, fontes oficiais, não clicar em links suspeitos)"]},
+    {"id":"se4","tipo":"escrita","tema":"seguranca","classe":7,"dificuldade":1,"contexto":"Estás num cibercafé e acabaste de ver o teu correio electrónico. Tens de sair, mas o computador é partilhado.","q":"O que deves fazer antes de sair? Explica porquê.","modelo":"Terminar a sessão (sair da conta) e fechar o navegador. Assim, a pessoa que usar o computador a seguir não consegue aceder às minhas mensagens nem aos meus dados.","pontosChave":["Terminar a sessão / sair da conta","Explicar o risco: a pessoa seguinte poderia aceder aos teus dados"]},
+    {"id":"se5","tipo":"escrita","tema":"seguranca","classe":7,"dificuldade":2,"q":"Explica, por palavras tuas, o que é o phishing e como o podes reconhecer.","modelo":"Phishing é uma burla em que alguém finge ser uma entidade de confiança (banco, operadora, escola…) para roubar dados. Reconhece-se por prometer prémios, criar urgência, pedir senhas ou códigos, ter erros de escrita ou links estranhos.","pontosChave":["Definição: enganar fingindo ser uma entidade de confiança para roubar dados","Pelo menos um sinal de alerta (prémio, urgência, pedido de senha ou código, link estranho)"]},
+
+    {"id":"h1","tema":"hardware","classe":7,"dificuldade":1,"q":"Qual destes dispositivos é usado principalmente para armazenar dados?","opcoes":["Rato","Disco rígido","Teclado","Monitor"],"certa":1,"exp":"O disco rígido (tal como a pen drive ou o cartão de memória) guarda ficheiros de forma permanente."},
+    {"id":"h2","tema":"hardware","classe":7,"dificuldade":1,"q":"Qual é o componente que executa as instruções e é chamado «cérebro» do computador?","opcoes":["Monitor","Processador (CPU)","Coluna","Impressora"],"certa":1,"exp":"O processador executa as instruções dos programas e coordena o trabalho do computador."},
+    {"id":"h3","tema":"hardware","classe":7,"dificuldade":1,"q":"Qual destes é um dispositivo de entrada?","opcoes":["Impressora","Monitor","Teclado","Colunas"],"certa":2,"exp":"Os dispositivos de entrada enviam informação para o computador. O teclado serve para escrever."},
+    {"id":"h4","tema":"hardware","classe":7,"dificuldade":1,"q":"Qual destes é um dispositivo de saída?","opcoes":["Rato","Scanner","Impressora","Microfone"],"certa":2,"exp":"Os dispositivos de saída mostram ou entregam o resultado do processamento: impressora, monitor, colunas."},
+    {"id":"h5","tema":"hardware","classe":7,"dificuldade":1,"q":"Para que serve a memória RAM?","opcoes":["Guardar ficheiros para sempre","Guardar temporariamente os programas e dados em uso","Ligar à Internet","Carregar a bateria"],"certa":1,"exp":"A RAM é a memória de trabalho: guarda o que está a ser usado neste momento."},
+    {"id":"h7","tema":"hardware","classe":7,"dificuldade":1,"q":"Qual destas unidades de armazenamento é a maior?","opcoes":["Kilobyte (KB)","Megabyte (MB)","Gigabyte (GB)","Byte"],"certa":2,"exp":"Por ordem crescente: byte, KB, MB, GB."},
+    {"id":"h8","tema":"hardware","classe":7,"dificuldade":2,"q":"Qual destes dispositivos serve ao mesmo tempo de entrada e de saída?","opcoes":["Rato","Impressora","Ecrã táctil","Colunas"],"certa":2,"exp":"O ecrã táctil mostra informação (saída) e recebe os teus toques (entrada)."},
+    {"id":"h10","tema":"hardware","classe":7,"dificuldade":2,"q":"Para que serve a placa-mãe?","opcoes":["Só para guardar fotografias","Ligar os componentes do computador e permitir que comuniquem entre si","Arrefecer o computador","Mostrar imagens no ecrã"],"certa":1,"exp":"Todos os componentes ligam-se à placa-mãe, que faz a comunicação entre eles."},
+    {"id":"ha1","tema":"hardware","classe":7,"dificuldade":1,"contexto":"Queres guardar 3 GB de fotografias e vídeos da escola para levar para casa.","q":"Qual destes é mais adequado?","opcoes":["Memória RAM","Pen drive","Placa-mãe","Monitor"],"certa":1,"exp":"A pen drive armazena ficheiros e é portátil. A RAM é memória temporária."},
+    {"id":"hv1","tema":"hardware","classe":7,"dificuldade":1,"q":"Verdadeiro ou falso: os dados guardados na RAM continuam gravados depois de desligares o computador.","opcoes":["Verdadeiro","Falso"],"certa":1,"ordemFixa":true,"exp":"A RAM é memória temporária. Por isso é preciso guardar os ficheiros antes de desligar."},
+    {"id":"hv2","tema":"hardware","classe":7,"dificuldade":1,"q":"Verdadeiro ou falso: o monitor é um dispositivo de saída.","opcoes":["Verdadeiro","Falso"],"certa":0,"ordemFixa":true,"exp":"O monitor mostra o resultado do processamento, por isso é de saída."},
+    {"id":"he1","tipo":"escrita","tema":"hardware","classe":7,"dificuldade":2,"contexto":"O computador liga (ouves a ventoinha e vês luzes), mas o monitor não mostra nenhuma imagem.","q":"Indica duas coisas que poderias verificar.","modelo":"Verificar se o monitor está ligado à corrente e com o botão ligado; verificar se o cabo de vídeo (VGA ou HDMI) está bem encaixado no monitor e no computador; verificar se o monitor está na entrada certa.","pontosChave":["Uma verificação correcta (ex.: monitor ligado à corrente)","Uma segunda verificação correcta (ex.: cabo de vídeo bem encaixado, entrada certa do monitor)"]},
+    {"id":"he2","tipo":"escrita","tema":"hardware","classe":7,"dificuldade":2,"q":"Explica a diferença entre a memória RAM e o disco rígido.","modelo":"A RAM guarda temporariamente os programas e dados que estão a ser usados e é apagada quando o computador é desligado. O disco rígido guarda os ficheiros de forma permanente, mesmo com o computador desligado.","pontosChave":["A RAM é temporária e apaga-se ao desligar","O disco rígido guarda os ficheiros de forma permanente"]},
+    {"id":"he3","tipo":"escrita","tema":"hardware","classe":7,"dificuldade":1,"contexto":"Precisas de levar um trabalho de casa para a escola para o imprimir.","q":"Que dispositivo de armazenamento podes usar para o transportar e porquê?","modelo":"Uma pen drive (ou um cartão de memória), porque é pequena, guarda os ficheiros de forma permanente e pode ser ligada a outro computador para copiar o trabalho.","pontosChave":["Indica um dispositivo adequado (pen drive ou cartão de memória)","Justifica: guarda ficheiros e pode ser ligada a outro computador"]}
+  ]
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+
+/* ====== CONFIGURAÇÃO (o professor pode editar aqui) ====== */
+var CONFIG = {
+  classe: 7,
+  temaDestaque: 'seguranca',
+  tempoDesafio: 10,      // segundos por pergunta no Desafio TIC
+  nDesafio: 10,          // perguntas por Desafio
+  minEscrita: 15,        // caracteres mínimos para ver a resposta de referência
+  xpEscrita: 8,          // XP fixo por resposta escrita concluída
+  xpLicao: 10,           // XP da primeira conclusão de cada lição
+  professor: '',         // ex.: 'Fulano de Tal' — aparece no rodapé
+  ano: 2026,
+  whatsappProfessor: ''  // ex.: '258841234567' (sem + nem espaços). Vazio = só copiar/partilhar o resumo
+};
+
+var BANCO = JSON.parse(document.getElementById('banco').textContent);
+var ACTIV = BANCO.actividades || [];
+var LICOES = BANCO.licoes || [];
+var CHAVE = 'tics-aula-digital-v1';   // mantém a chave: o progresso da V1 continua a funcionar
+var app = document.getElementById('app');
+
+var NIVEIS = [
+  {xp:0,nome:'Principiante'},{xp:50,nome:'Curioso Digital'},{xp:150,nome:'Utilizador'},
+  {xp:300,nome:'Explorador Digital'},{xp:500,nome:'Técnico TIC'},{xp:750,nome:'Especialista'},{xp:1000,nome:'Mestre TIC'}
+];
+
+var MEDALHAS = [
+  {id:'passos',ic:'🏅',nome:'Primeiros passos',desc:'Completa a primeira actividade.',ok:function(s){return s.sessoes>=1;}},
+  {id:'guardiao',ic:'🔐',nome:'Guardião digital',desc:'Obtém 20 respostas certas de Segurança Digital, nos exercícios ou no Desafio.',ok:function(s){return (s.certas.seguranca||0)>=20;}},
+  {id:'tecnico',ic:'💻',nome:'Técnico de hardware',desc:'Obtém 20 respostas certas de Hardware, nos exercícios ou no Desafio.',ok:function(s){return (s.certas.hardware||0)>=20;}},
+  {id:'relampago',ic:'⚡',nome:'Relâmpago',desc:'Acerta 5 seguidas no Desafio TIC.',ok:function(s){return s.melhorSeq>=5;}},
+  {id:'perfeito',ic:'🎯',nome:'Sem falhas',desc:'Acerta todas as perguntas de escolha de uma sessão com 5 ou mais.',ok:function(s){return s.perfeitas>=1;}},
+  {id:'pensador',ic:'✍️',nome:'Pensador',desc:'Conclui 5 respostas escritas.',ok:function(s){return s.escritas>=5;}},
+  {id:'estudioso',ic:'📖',nome:'Estudioso',desc:'Conclui 3 lições no modo Aprender.',ok:function(s){return s.licoes.length>=3;}},
+  {id:'persistente',ic:'📅',nome:'Persistente',desc:'Usa a plataforma em 3 dias diferentes.',ok:function(s){return s.dias.length>=3;}},
+  {id:'mestre',ic:'🔥',nome:'Mestre TIC',desc:'Chega aos 1 000 XP.',ok:function(s){return s.xp>=1000;}}
+];
+
+/* ====== estado guardado neste dispositivo ====== */
+function padrao(){return {nome:'',xp:0,certas:{},respondidas:{},sessoes:0,dias:[],medalhas:[],melhorSeq:0,perfeitas:0,licoes:[],escritas:0};}
+function carregar(){
+  try{var r=localStorage.getItem(CHAVE); if(r) return Object.assign(padrao(),JSON.parse(r));}catch(e){}
+  return padrao();
+}
+function guardar(){try{localStorage.setItem(CHAVE,JSON.stringify(S));}catch(e){}}
+var S = carregar();
+var sess = null, timer = null, W = null, L = null, ultimoResumo = '';
+var setup = {tema:null,n:10,modo:'mista'};
+
+/* ====== utilitários ====== */
+function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function embaralhar(a){var b=a.slice(),i,j,t;for(i=b.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function parar(){if(timer){clearInterval(timer);timer=null;}}
+function tipoDe(a){return a.tipo==='escrita'?'escrita':'multipla';}
+function perguntas(t,tipo){
+  return ACTIV.filter(function(a){return a.classe===CONFIG.classe && (!t||a.tema===t) && (!tipo||tipoDe(a)===tipo);});
+}
+function tema(id){return BANCO.temas.filter(function(t){return t.id===id;})[0]||{id:id,nome:id,icone:'📘'};}
+function licaoPorId(id){return LICOES.filter(function(l){return l.id===id;})[0];}
+function preparar(a){
+  var b={id:a.id,tipo:tipoDe(a),tema:a.tema,q:a.q,contexto:a.contexto||'',exp:a.exp||''};
+  if(b.tipo==='escrita'){b.modelo=a.modelo||'';b.pontos=a.pontosChave||[];return b;}
+  var ordem=a.opcoes.map(function(_,i){return i;});
+  if(!a.ordemFixa) ordem=embaralhar(ordem);
+  b.ops=ordem.map(function(i){return a.opcoes[i];});
+  b.certa=ordem.indexOf(a.certa);
+  return b;
+}
+function montarLista(t,n,modo){
+  var multi=embaralhar(perguntas(t,'multipla')), esc_=embaralhar(perguntas(t,'escrita')), l;
+  if(modo==='multipla') l=multi;
+  else if(modo==='escrita') l=esc_;
+  else if(!n) l=multi.concat(esc_);
+  else{
+    var ne=Math.min(esc_.length,Math.round(n*0.3)), nm=Math.min(multi.length,n-ne);
+    ne=Math.min(esc_.length,n-nm);
+    l=multi.slice(0,nm).concat(esc_.slice(0,ne));
+  }
+  if(n) l=l.slice(0,n);
+  return embaralhar(l).map(preparar);
+}
+function cont(t){return {m:perguntas(t,'multipla').length,e:perguntas(t,'escrita').length};}
+function nivelInfo(xp){
+  var idx=0,i;
+  for(i=0;i<NIVEIS.length;i++){if(xp>=NIVEIS[i].xp) idx=i;}
+  var atual=NIVEIS[idx], prox=NIVEIS[idx+1]||null;
+  return {idx:idx,nome:atual.nome,prox:prox,pct:prox?Math.round((xp-atual.xp)/(prox.xp-atual.xp)*100):100};
+}
+function totalCertas(){var t=0,k;for(k in S.certas)t+=S.certas[k];return t;}
+function totalResp(){var t=0,k;for(k in S.respondidas)t+=S.respondidas[k];return t;}
+function verificarMedalhas(){
+  var novas=[];
+  MEDALHAS.forEach(function(m){if(S.medalhas.indexOf(m.id)<0 && m.ok(S)){S.medalhas.push(m.id);novas.push(m);}});
+  return novas;
+}
+function hoje(){var d=new Date();return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();}
+function resumoTexto(titulo,c,n,xpGanho,escTxt){
+  var ni=nivelInfo(S.xp);
+  var l=['TICs Aula Digital — Resultado','','Aluno: '+(S.nome||'—'),'Classe: '+CONFIG.classe+'ª'];
+  if(titulo){
+    l.push('Tema: '+titulo);
+    if(n>0) l.push('Resultado: '+c+'/'+n+' ('+Math.round(c/n*100)+'%)');
+    if(escTxt) l.push('Respostas escritas: '+escTxt);
+    l.push('XP ganho: +'+xpGanho);
+  }
+  l.push('XP total: '+S.xp+' · Nível '+(ni.idx+1)+' ('+ni.nome+')');
+  l.push('Data: '+hoje());
+  return l.join('\n');
+}
+function copiarTexto(t,ok,falha){
+  function alt(){
+    try{
+      var x=document.createElement('textarea'); x.value=t; x.style.position='fixed'; x.style.opacity='0';
+      document.body.appendChild(x); x.select(); var r=document.execCommand('copy'); document.body.removeChild(x);
+      if(r) ok(); else falha();
+    }catch(e){falha();}
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,alt);}else alt();
+}
+function blocoPartilha(texto){
+  ultimoResumo=texto;
+  var h='<p class="sub">Resumo pronto para partilhar</p>';
+  if(CONFIG.whatsappProfessor) h+='<a class="btn sec" target="_blank" rel="noopener" href="https://wa.me/'+CONFIG.whatsappProfessor+'?text='+encodeURIComponent(texto)+'">Enviar ao professor pelo WhatsApp</a>';
+  h+='<button class="btn sec" data-a="copiarResumo">Copiar resumo</button>';
+  if(navigator.share) h+='<button class="btn sec" data-a="partilhar">Partilhar…</button>';
+  return h+'<p class="estado" role="status"></p>';
+}
+function rodape(){
+  var h='<p class="rodape">Versão comunitária 2.1 · sem login, sem anúncios, sem recolha de dados.<br>O teu progresso fica guardado neste dispositivo.<br>Desenvolvido especialmente para apoio ao ensino de TIC.';
+  if(CONFIG.professor) h+='<br>Em colaboração com o Professor '+esc(CONFIG.professor)+' — '+CONFIG.ano;
+  return h+'</p>';
+}
+function topo(titulo){
+  return '<header class="topo"><button class="voltar" data-a="home" aria-label="Voltar ao início">‹</button><h1>'+esc(titulo)+'</h1></header>';
+}
+function pintar(html,alvo){
+  app.innerHTML=html;
+  var el=alvo&&document.getElementById(alvo);
+  if(el&&el.scrollIntoView) el.scrollIntoView({block:'start'}); else window.scrollTo(0,0);
+}
+function estado(msg,tipo){var e=document.querySelector('.estado');if(e){e.textContent=msg;e.style.color=tipo==='erro'?'var(--red)':'var(--green-dk)';}}
+function renderVazio(titulo,msg){
+  pintar(topo(titulo)+'<div class="caixa"><p>'+esc(msg)+'</p></div><button class="btn sec" data-a="home">Início</button>');
+}
+
+/* ====== ecrã inicial ====== */
+function renderNome(){
+  pintar('<p class="marca">TICs Aula Digital</p>'+
+  '<h1 style="font:800 30px/1.15 \'Trebuchet MS\',\'Segoe UI\',sans-serif">Aprender. Praticar. Resolver.</h1>'+
+  '<p>TICs — '+CONFIG.classe+'ª classe. Estuda, responde, ganha XP e sobe de nível.</p>'+
+  '<form id="fnome" class="caixa"><label for="nome"><b>Como te chamas?</b></label>'+
+  '<input type="text" id="nome" maxlength="30" autocomplete="off" placeholder="Nome e apelido" required>'+
+  '<button class="btn" type="submit">Começar</button></form>'+rodape());
+}
+
+function renderHome(){
+  parar(); sess=null; W=null; L=null;
+  var ni=nivelInfo(S.xp), dest=tema(CONFIG.temaDestaque);
+  var xptxt=ni.prox?('Faltam '+(ni.prox.xp-S.xp)+' XP para '+ni.prox.nome):'Nível máximo alcançado';
+  var h='<p class="marca">TICs Aula Digital</p>'+
+  '<section class="aluno" aria-label="O teu nível"><p class="ola">Olá, '+esc(S.nome)+'</p>'+
+  '<p class="nivel">'+esc(ni.nome)+'<small>Nível '+(ni.idx+1)+'</small></p>'+
+  '<div class="xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+ni.pct+'"><i style="width:'+ni.pct+'%"></i></div>'+
+  '<p class="xptxt">'+S.xp+' XP · '+xptxt+'</p></section>'+
+  '<div class="classes"><button aria-current="true">'+CONFIG.classe+'ª classe</button><button disabled>8ª · em breve</button><button disabled>9ª · em breve</button></div>'+
+  '<section class="destaque"><div><small>Tema em destaque</small><br><b>'+dest.icone+' '+esc(dest.nome)+'</b></div>'+
+  '<button class="btn" data-a="destaque">Praticar agora</button></section>'+
+  '<div class="lista">'+
+  '<button class="acao" data-a="aprender"><span class="ic">📖</span><span><b>Aprender</b><small>Lições curtas: lê, compreende e verifica</small></span></button>'+
+  '<button class="acao" data-a="ex"><span class="ic">🧠</span><span><b>Exercícios</b><small>Escolha múltipla, respostas escritas e situações</small></span></button>'+
+  '<button class="acao" data-a="des"><span class="ic">⚡</span><span><b>Desafio TIC</b><small>'+CONFIG.nDesafio+' perguntas rápidas, '+CONFIG.tempoDesafio+' segundos cada</small></span></button>'+
+  '<button class="acao" data-a="med"><span class="ic">🏆</span><span><b>Medalhas</b><small>'+S.medalhas.length+' de '+MEDALHAS.length+' conquistadas</small></span></button>'+
+  '<button class="acao" data-a="prog"><span class="ic">💾</span><span><b>O meu progresso</b><small>Guardar, recuperar e partilhar com o professor</small></span></button>'+
+  '</div>'+rodape();
+  pintar(h);
+}
+
+/* ====== Exercícios: preparação ====== */
+function renderSetup(){
+  parar();
+  if(!setup.tema) setup.tema=BANCO.temas[0].id;
+  var c=cont(setup.tema), total=c.m+c.e;
+  if(setup.modo==='multipla'&&!c.m) setup.modo='mista';
+  if(setup.modo==='escrita'&&!c.e) setup.modo='mista';
+  var h=topo('Exercícios')+'<p class="sub">Tema</p><div class="esc">';
+  BANCO.temas.forEach(function(t){
+    var ct=cont(t.id), ac=S.certas[t.id]||0;
+    h+='<button data-a="setTema" data-v="'+t.id+'" aria-pressed="'+(setup.tema===t.id)+'"><span class="ic">'+t.icone+'</span><span><b>'+esc(t.nome)+'</b><small>'+(ct.m+ct.e)+' actividades · '+ac+' respostas certas até agora</small></span></button>';
+  });
+  h+='</div><p class="sub">Tipo de actividade</p><div class="chips pq">';
+  [['mista','Mista',total>0],['multipla','Escolha múltipla',c.m>0],['escrita','Escrita',c.e>0]].forEach(function(o){
+    h+='<button data-a="setModo" data-v="'+o[0]+'" aria-pressed="'+(setup.modo===o[0])+'"'+(o[2]?'':' disabled')+'>'+o[1]+'</button>';
+  });
+  h+='</div>';
+  if(setup.modo==='mista') h+='<p class="aviso">Mista: sobretudo escolha múltipla, com algumas respostas escritas e situações práticas.</p>';
+  if(setup.modo==='escrita') h+='<p class="aviso">Respostas escritas: podes consultar o caderno e comparar com a resposta de referência.</p>';
+  h+='<p class="sub">Quantas actividades?</p><div class="chips">';
+  [5,10,0].forEach(function(n){h+='<button data-a="setN" data-v="'+n+'" aria-pressed="'+(setup.n===n)+'">'+(n||'Todas')+'</button>';});
+  h+='</div>';
+  if(!total) h+='<div class="caixa"><p>Ainda não há actividades deste tema para a '+CONFIG.classe+'ª classe.</p></div>';
+  h+='<button class="btn" data-a="exStart"'+(total?'':' disabled')+'>Começar</button>';
+  pintar(h);
+}
+
+function renderIntroDes(){
+  parar();
+  pintar(topo('Desafio TIC')+
+  '<div class="caixa"><p><b>Como funciona</b></p>'+
+  '<p>Perguntas rápidas de todos os temas (escolha múltipla e verdadeiro/falso). Tens '+CONFIG.tempoDesafio+' segundos para cada uma.</p>'+
+  '<p>Cada resposta certa vale +10 XP. A cada 5 certas seguidas ganhas +20 XP extra.</p>'+
+  '<p class="aviso">As respostas escritas estão nos Exercícios, onde podes pensar com calma.</p></div>'+
+  '<button class="btn" data-a="desStart">Começar desafio</button>');
+}
+
+/* ====== sessões ====== */
+function iniciar(tipo,t,n,modo){
+  var lista;
+  if(tipo==='des') lista=embaralhar(perguntas(null,'multipla')).slice(0,CONFIG.nDesafio).map(preparar);
+  else lista=montarLista(t,n,modo||'mista');
+  if(!lista.length){renderVazio(tipo==='des'?'Desafio TIC':'Exercícios','Ainda não há actividades para esta escolha. Experimenta outro tema ou outro tipo.');return;}
+  var nm=lista.filter(function(x){return x.tipo==='multipla';}).length;
+  sess={tipo:tipo,tema:t||null,modo:modo||'mista',n0:n||0,titulo:tipo==='des'?'Desafio TIC':tema(t).nome,lista:lista,nm:nm,
+        i:0,certas:0,erros:[],escritas:[],feito:false,escolha:null,seq:0,xp:0,ganho:0,bonus:false,nivelAntes:nivelInfo(S.xp).idx};
+  entrar();
+}
+function entrar(){
+  var q=sess.lista[sess.i];
+  sess.feito=false; sess.escolha=null; sess.ganho=0; sess.bonus=false;
+  W=(q.tipo==='escrita')?novoW('sess',q):null;
+  renderQuestao();
+  if(sess.tipo==='des') arrancarTempo();
+}
+function arrancarTempo(){
+  parar();
+  var t0=Date.now(), total=CONFIG.tempoDesafio;
+  timer=setInterval(function(){
+    var rest=total-(Date.now()-t0)/1000, b=document.getElementById('tbar');
+    if(b){b.style.width=Math.max(0,rest/total*100)+'%'; b.className=rest<=3?'baixo':'';}
+    if(rest<=0) responder(-1);
+  },100);
+}
+
+/* ====== actividades de escrita (sessões e lições) ====== */
+function novoW(ctx,a){return {ctx:ctx,a:a,texto:'',marc:a.pontos.map(function(){return false;}),stage:'escrever',nivel:'',ganho:0};}
+function classificar(marc){
+  var p=marc.length, m=marc.filter(Boolean).length;
+  if(!p||m===p) return 'completa';
+  if(m>0&&m>=Math.ceil(p/2)) return 'parcial';
+  return 'estudar';
+}
+function htmlEscrita(){
+  var a=W.a, h='';
+  if(a.contexto) h+='<div class="contexto"><small>Situação</small>'+esc(a.contexto)+'</div>';
+  h+='<h2 class="pergunta">'+esc(a.q)+'</h2>';
+  if(W.stage==='escrever'){
+    h+='<p class="aviso">Escreve com as tuas palavras. Podes consultar o caderno.</p>'+
+       '<textarea id="resp-escrita" placeholder="Escreve a tua resposta…" aria-label="A tua resposta">'+esc(W.texto)+'</textarea>'+
+       '<p class="aviso">Escreve pelo menos '+CONFIG.minEscrita+' caracteres para ver a resposta de referência.</p>'+
+       '<button class="btn" id="btn-ver" data-a="escVer"'+(W.texto.trim().length<CONFIG.minEscrita?' disabled':'')+'>Ver resposta de referência</button>';
+    return h;
+  }
+  h+='<div><p class="rot">A tua resposta</p><div class="minha">'+esc(W.texto)+'</div></div>'+
+     '<div><p class="rot">Resposta de referência</p><div class="ref">'+esc(a.modelo)+'</div></div>';
+  if(a.exp) h+='<p class="aviso">'+esc(a.exp)+'</p>';
+  h+='<p class="sub">A tua resposta incluiu estes pontos?</p><div class="lista">';
+  a.pontos.forEach(function(p,i){
+    h+='<label class="ponto"><input type="checkbox" data-ponto="'+i+'"'+(W.marc[i]?' checked':'')+(W.stage==='feito'?' disabled':'')+'><span>'+esc(p)+'</span></label>';
+  });
+  h+='</div>';
+  if(W.stage==='rever') h+='<button class="btn" data-a="escConcluir">Concluir</button>';
+  else{
+    var txt={completa:'✔ Resposta completa. Bom trabalho!',parcial:'◐ Resposta em parte. Revê o que faltou.',estudar:'📘 Vale a pena estudar este tema outra vez.'}[W.nivel];
+    h+='<div class="banner '+W.nivel+'" role="status">'+txt+(W.ganho?' +'+W.ganho+' XP':'')+'</div>';
+  }
+  return h;
+}
+function renderW(){if(W.ctx==='sess') renderQuestao(); else renderLicao(true);}
+
+/* ====== ecrã de pergunta ====== */
+function renderQuestao(){
+  var q=sess.lista[sess.i], n=sess.lista.length, d=sess.tipo==='des';
+  var h=topo(sess.titulo)+
+  '<div class="prog"><span>Actividade '+(sess.i+1)+' de '+n+'</span>'+(d?'<span>🔥 '+sess.seq+' seguidas</span>':'')+'</div>'+
+  '<div class="barra"><i style="width:'+(sess.i/n*100)+'%"></i></div>';
+  var ultima=sess.i+1>=n;
+  if(q.tipo==='escrita'){
+    h+=htmlEscrita();
+    if(W.stage==='feito') h+='<button class="btn" data-a="seg">'+(ultima?'Ver resultado':'Seguinte')+'</button>';
+    pintar(h); return;
+  }
+  if(d&&!sess.feito) h+='<div class="tempo" aria-hidden="true"><i id="tbar"></i></div>';
+  if(q.contexto) h+='<div class="contexto"><small>Situação</small>'+esc(q.contexto)+'</div>';
+  h+='<h2 class="pergunta">'+esc(q.q)+'</h2><div id="ops">';
+  q.ops.forEach(function(t,pos){
+    var cls='opt', mk='', dis='';
+    if(sess.feito){
+      dis=' disabled';
+      if(pos===q.certa){cls+=' ok';mk='<span class="marca-r">✔</span>';}
+      else if(pos===sess.escolha){cls+=' no';mk='<span class="marca-r">✖</span>';}
+      else cls+=' dim';
+    }
+    h+='<button class="'+cls+'" data-a="resp" data-pos="'+pos+'"'+dis+'><span>'+esc(t)+'</span>'+mk+'</button>';
+  });
+  h+='</div>';
+  if(sess.feito){
+    var ok=sess.escolha===q.certa;
+    var tit=sess.escolha===-1?'⏱ Tempo esgotado.':(ok?'✔ Correcto!':'✖ Incorrecto.');
+    h+='<div class="fb '+(ok?'ok':'no')+'" role="status"><strong>'+tit+(sess.ganho?' +'+sess.ganho+' XP':'')+'</strong>';
+    if(!(d&&ok)) h+=(ok?'':'A resposta certa está assinalada. ')+esc(q.exp);
+    if(sess.bonus) h+=' Sequência de 5! Bónus incluído.';
+    h+='</div>';
+    if(!(d&&ok)) h+='<button class="btn" data-a="seg">'+(ultima?'Ver resultado':'Seguinte')+'</button>';
+  }
+  pintar(h);
+  if(sess.feito){var f=document.querySelector('.fb'); if(f&&f.scrollIntoView) f.scrollIntoView({block:'nearest'});}
+}
+
+function responder(pos){
+  if(!sess||sess.feito||sess.lista[sess.i].tipo!=='multipla') return;
+  parar();
+  var q=sess.lista[sess.i], ok=(pos===q.certa), d=sess.tipo==='des', ganho=0;
+  sess.feito=true; sess.escolha=pos; sess.bonus=false;
+  S.respondidas[q.tema]=(S.respondidas[q.tema]||0)+1;
+  if(ok){
+    sess.certas++; sess.seq++;
+    S.certas[q.tema]=(S.certas[q.tema]||0)+1;
+    ganho=d?10:5;
+    if(d){ if(sess.seq>S.melhorSeq) S.melhorSeq=sess.seq; if(sess.seq%5===0){ganho+=20;sess.bonus=true;} }
+  } else { sess.seq=0; sess.erros.push(q); }
+  sess.ganho=ganho; sess.xp+=ganho; S.xp+=ganho; guardar();
+  renderQuestao();
+  if(d&&ok){var i=sess.i; setTimeout(function(){if(sess&&sess.i===i&&sess.feito) seguinte();},900);}
+}
+
+function seguinte(){
+  if(!sess) return;
+  if(sess.i+1<sess.lista.length){sess.i++; entrar();}
+  else fim();
+}
+
+function fim(){
+  parar();
+  var h=hoje2();
+  S.sessoes++;
+  if(S.dias.indexOf(h)<0) S.dias.push(h);
+  var perfeita=(sess.nm>=5 && sess.certas===sess.nm);
+  sess.bonusPerfeito=0;
+  if(perfeita){S.perfeitas++; if(sess.tipo==='ex'){sess.bonusPerfeito=15;S.xp+=15;sess.xp+=15;}}
+  sess.novas=verificarMedalhas();
+  sess.subiu=nivelInfo(S.xp).idx>sess.nivelAntes;
+  guardar();
+  renderResultado();
+}
+function hoje2(){return new Date().toISOString().slice(0,10);}
+
+function renderResultado(){
+  var nm=sess.nm, c=sess.certas, ne=sess.escritas.length, pct=nm?Math.round(c/nm*100):0;
+  var cnt={completa:0,parcial:0,estudar:0};
+  sess.escritas.forEach(function(e){cnt[e.nivel]++;});
+  var escTxt=ne?(cnt.completa+' completas, '+cnt.parcial+' em parte, '+cnt.estudar+' a estudar'):'';
+  var msg=pct===100?'Sem falhas! Excelente.':pct>=70?'Muito bem!':pct>=50?'Bom começo. Repete para melhorar.':'Continua a praticar — vais melhorar.';
+  var ni=nivelInfo(S.xp);
+  var h=topo('Resultado')+'<section class="placar">';
+  if(nm) h+='<div class="nota">'+c+'/'+nm+'</div><div class="pct">'+pct+'%</div><p>'+msg+'</p>';
+  else h+='<div class="nota">✍ '+ne+'</div><div class="pct">respostas escritas</div>';
+  if(nm&&ne) h+='<p>Respostas escritas: '+ne+' ('+escTxt+')</p>';
+  if(!nm&&ne) h+='<p>'+escTxt+'</p>';
+  h+='<p>+'+sess.xp+' XP nesta sessão'+(sess.bonusPerfeito?' (inclui +15 por acertar tudo)':'')+'</p></section>';
+  if(sess.subiu) h+='<div class="novo">⬆ Subiste para o nível '+(ni.idx+1)+': '+esc(ni.nome)+'!</div>';
+  sess.novas.forEach(function(m){h+='<div class="novo">'+m.ic+' Nova medalha: '+esc(m.nome)+'</div>';});
+  var rever=sess.erros.length+sess.escritas.filter(function(e){return e.nivel!=='completa';}).length;
+  if(rever){
+    h+='<p class="sub">Para rever</p>';
+    sess.erros.forEach(function(q){
+      h+='<div class="erro"><p><b>'+esc(q.q)+'</b></p><p class="certa">Resposta certa: '+esc(q.ops[q.certa])+'</p><p class="exp">'+esc(q.exp)+'</p></div>';
+    });
+    sess.escritas.forEach(function(e){
+      if(e.nivel==='completa') return;
+      h+='<div class="erro"><p><b>'+esc(e.a.q)+'</b></p><p class="certa">Resposta de referência: '+esc(e.a.modelo)+'</p></div>';
+    });
+  }
+  h+='<button class="btn" data-a="nova">'+(sess.tipo==='des'?'Novo desafio':'Nova sessão')+'</button>'+
+     blocoPartilha(resumoTexto(sess.titulo,c,nm,sess.xp,escTxt))+
+     '<button class="btn sec" data-a="home">Início</button>';
+  pintar(h);
+}
+
+/* ====== Aprender ====== */
+function licoes(t){return LICOES.filter(function(l){return l.classe===CONFIG.classe&&l.tema===t;});}
+function renderAprender(){
+  parar();
+  var h=topo('Aprender')+'<p>Lê a lição, responde à verificação e depois pratica o tema.</p>', vazio=true;
+  BANCO.temas.forEach(function(t){
+    var ls=licoes(t.id); if(!ls.length) return; vazio=false;
+    h+='<p class="sub">'+t.icone+' '+esc(t.nome)+'</p><div class="lista">';
+    ls.forEach(function(l){
+      var feita=S.licoes.indexOf(l.id)>=0;
+      h+='<button class="acao" data-a="licao" data-id="'+l.id+'"><span class="ic">'+(feita?'✅':'📖')+'</span><span><b>'+esc(l.titulo)+'</b><small>'+(feita?'Concluída':'Lição curta')+'</small></span></button>';
+    });
+    h+='</div>';
+  });
+  if(vazio) h+='<div class="caixa"><p>Ainda não há lições para a '+CONFIG.classe+'ª classe.</p></div>';
+  pintar(h);
+}
+function abrirLicao(id){
+  var l=licaoPorId(id); if(!l){renderAprender();return;}
+  L={id:id,escolha:null,ganho:0,ja:false,novas:[]};
+  var v=l.verificacao;
+  W=(v.tipo==='escrita')?novoW('licao',{tipo:'escrita',q:v.q,contexto:v.contexto||'',modelo:v.modelo||'',pontos:v.pontosChave||[],exp:v.exp||''}):null;
+  renderLicao(false);
+}
+function concluirLicao(escrita){
+  var ja=S.licoes.indexOf(L.id)>=0;
+  L.ja=ja;
+  if(!ja){S.licoes.push(L.id); S.xp+=CONFIG.xpLicao; L.ganho=CONFIG.xpLicao; if(escrita) S.escritas++;}
+  L.novas=verificarMedalhas();
+  guardar();
+}
+function fimLicao(l){
+  var h='';
+  if(L.ja) h+='<div class="fb ok" role="status">Lição já concluída. Já recebeste o XP desta actividade.</div>';
+  L.novas.forEach(function(m){h+='<div class="novo">'+m.ic+' Nova medalha: '+esc(m.nome)+'</div>';});
+  return h+'<button class="btn" data-a="praticar" data-v="'+l.tema+'">Praticar este tema</button><button class="btn sec" data-a="aprender">Mais lições</button>';
+}
+function renderLicao(alvo){
+  var l=licaoPorId(L.id), v=l.verificacao, escrita=(v.tipo==='escrita');
+  var h=topo(l.titulo);
+  l.corpo.forEach(function(p){h+='<p>'+esc(p)+'</p>';});
+  h+='<div class="destaque"><b>Exemplo</b><p>'+esc(l.exemplo)+'</p></div><p class="sub" id="alvo">Verifica</p>';
+  if(escrita){
+    h+=htmlEscrita();
+    if(W.stage==='feito') h+=fimLicao(l);
+  } else {
+    var resp=(L.escolha!==null), ok=resp&&L.escolha===v.certa;
+    h+='<h2 class="pergunta">'+esc(v.q)+'</h2><div id="ops">';
+    v.opcoes.forEach(function(t,pos){
+      var cls='opt',mk='',dis='';
+      if(resp){
+        dis=' disabled';
+        if(pos===v.certa){cls+=' ok';mk='<span class="marca-r">✔</span>';}
+        else if(pos===L.escolha){cls+=' no';mk='<span class="marca-r">✖</span>';}
+        else cls+=' dim';
+      }
+      h+='<button class="'+cls+'" data-a="licResp" data-pos="'+pos+'"'+dis+'><span>'+esc(t)+'</span>'+mk+'</button>';
+    });
+    h+='</div>';
+    if(resp){
+      h+='<div class="fb '+(ok?'ok':'no')+'" role="status"><strong>'+(ok?'✔ Correcto!':'✖ Incorrecto.')+(L.ganho?' +'+L.ganho+' XP':'')+'</strong>'+esc(v.exp||'')+'</div>';
+      h+=ok?fimLicao(l):'<button class="btn" data-a="licao" data-id="'+l.id+'">Tentar de novo</button>';
+    }
+  }
+  pintar(h,alvo?'alvo':null);
+}
+
+/* ====== medalhas e progresso ====== */
+function renderMedalhas(){
+  parar();
+  var h=topo('Medalhas')+'<p>'+S.medalhas.length+' de '+MEDALHAS.length+' conquistadas.</p><div class="medalhas">';
+  MEDALHAS.forEach(function(m){
+    var tem=S.medalhas.indexOf(m.id)>=0;
+    h+='<div class="med'+(tem?'':' trancada')+'"><div class="ic">'+m.ic+'</div><b>'+esc(m.nome)+'</b><small>'+(tem?'Conquistada':esc(m.desc))+'</small></div>';
+  });
+  pintar(h+'</div>');
+}
+function codigo(){return 'TICS1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));}
+function renderProgresso(msg,tipo){
+  parar();
+  var acc=totalResp()?Math.round(totalCertas()/totalResp()*100):0;
+  var h=topo('O meu progresso')+
+  '<div class="caixa"><div class="nums"><div><b>'+S.xp+'</b><small>XP</small></div><div><b>'+S.sessoes+'</b><small>sessões</small></div>'+
+  '<div><b>'+acc+'%</b><small>Taxa de acerto</small></div><div><b>'+S.escritas+'</b><small>respostas escritas</small></div></div>'+
+  '<p class="aviso">A taxa de acerto conta só as perguntas de escolha múltipla.</p></div>'+
+  '<div class="caixa">'+blocoPartilha(resumoTexto())+'</div>'+
+  '<div class="caixa"><p class="sub">Guardar progresso</p><p class="aviso">O teu progresso fica guardado neste dispositivo. Não é uma conta online: se limpares os dados do navegador ou mudares de telemóvel, perdes o XP. Copia este código e guarda-o numa mensagem para ti.</p>'+
+  '<textarea id="cod" readonly>'+esc(codigo())+'</textarea><button class="btn sec" data-a="copiar">Copiar código</button></div>'+
+  '<div class="caixa"><p class="sub">Recuperar progresso</p><textarea id="imp" placeholder="Cola aqui o código TICS1:..."></textarea><button class="btn sec" data-a="importar">Recuperar</button></div>'+
+  '<p class="aviso" role="status" id="msgprog" style="font-weight:600;color:'+(tipo==='erro'?'var(--red)':'var(--green-dk)')+'">'+esc(msg||'')+'</p>'+
+  '<button class="btn perigo" data-a="apagar">Apagar tudo neste dispositivo</button>';
+  pintar(h);
+}
+function msgProg(msg,tipo){var e=document.getElementById('msgprog');if(e){e.textContent=msg;e.style.color=tipo==='erro'?'var(--red)':'var(--green-dk)';}}
+
+/* ====== acções ====== */
+var A={
+  home:function(){renderHome();},
+  aprender:function(){renderAprender();},
+  licao:function(d){abrirLicao(d.id);},
+  licResp:function(d){
+    var l=licaoPorId(L.id), pos=+d.pos;
+    if(L.escolha!==null) return;
+    L.escolha=pos;
+    if(pos===l.verificacao.certa) concluirLicao(false);
+    renderLicao(true);
+  },
+  praticar:function(d){setup.tema=d.v;iniciar('ex',d.v,5,'mista');},
+  destaque:function(){setup.tema=CONFIG.temaDestaque;iniciar('ex',CONFIG.temaDestaque,5,'mista');},
+  ex:function(){renderSetup();},
+  setTema:function(d){setup.tema=d.v;renderSetup();},
+  setModo:function(d){setup.modo=d.v;renderSetup();},
+  setN:function(d){setup.n=+d.v;renderSetup();},
+  exStart:function(){iniciar('ex',setup.tema,setup.n||0,setup.modo);},
+  des:function(){renderIntroDes();},
+  desStart:function(){iniciar('des',null);},
+  resp:function(d){responder(+d.pos);},
+  seg:function(){seguinte();},
+  escVer:function(){
+    if(!W||W.texto.trim().length<CONFIG.minEscrita) return;
+    W.stage='rever'; renderW();
+  },
+  escConcluir:function(){
+    if(!W||W.stage!=='rever') return;
+    W.nivel=classificar(W.marc); W.stage='feito';
+    if(W.ctx==='sess'){
+      S.escritas++; S.xp+=CONFIG.xpEscrita; sess.xp+=CONFIG.xpEscrita; W.ganho=CONFIG.xpEscrita;
+      sess.escritas.push({a:W.a,nivel:W.nivel}); guardar();
+    } else {
+      concluirLicao(true); W.ganho=L.ganho;
+    }
+    renderW();
+  },
+  nova:function(){iniciar(sess.tipo,sess.tema,sess.n0,sess.modo);},
+  med:function(){renderMedalhas();},
+  prog:function(){renderProgresso();},
+  copiarResumo:function(){copiarTexto(ultimoResumo,function(){estado('Resumo copiado.');},function(){estado('Não foi possível copiar.','erro');});},
+  partilhar:function(){if(navigator.share) navigator.share({text:ultimoResumo}).catch(function(){});},
+  copiar:function(){
+    var t=document.getElementById('cod');
+    copiarTexto(t.value,function(){msgProg('Código copiado.');},function(){t.select();msgProg('Selecciona o código e copia manualmente.','erro');});
+  },
+  importar:function(){
+    var v=(document.getElementById('imp').value||'').trim();
+    try{
+      if(v.indexOf('TICS1:')!==0) throw 0;
+      var o=JSON.parse(decodeURIComponent(escape(atob(v.slice(6)))));
+      if(typeof o.xp!=='number') throw 0;
+      S=Object.assign(padrao(),o); guardar(); renderProgresso('Progresso recuperado.');
+    }catch(e){msgProg('Código inválido. Confirma que copiaste tudo, desde TICS1:','erro');}
+  },
+  apagar:function(){
+    if(window.confirm('Apagar todo o progresso deste dispositivo? Isto não pode ser desfeito.')){
+      S=padrao(); guardar(); renderNome();
+    }
+  }
+};
+
+app.addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]');
+  if(!b||b.disabled) return;
+  var f=A[b.dataset.a];
+  if(f) f(b.dataset);
+});
+app.addEventListener('input',function(e){
+  if(e.target.id==='resp-escrita'&&W){
+    W.texto=e.target.value;
+    var b=document.getElementById('btn-ver');
+    if(b) b.disabled=W.texto.trim().length<CONFIG.minEscrita;
+  }
+});
+app.addEventListener('change',function(e){
+  var i=e.target.getAttribute&&e.target.getAttribute('data-ponto');
+  if(i!==null&&i!==undefined&&W&&W.stage==='rever') W.marc[+i]=e.target.checked;
+});
+app.addEventListener('submit',function(e){
+  if(e.target.id==='fnome'){
+    e.preventDefault();
+    var v=document.getElementById('nome').value.trim();
+    if(!v) return;
+    S.nome=v; guardar(); renderHome();
+  }
+});
+
+if(S.nome) renderHome(); else renderNome();
+})();
+</script>
+</body>
+</html>
